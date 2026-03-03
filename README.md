@@ -59,6 +59,4 @@ _*All commands support Hex/RGB_
 - namecolor.gradient.other - allows use of the /gradient command on other players
 - namecolor.filter.bypass - allows bypassing nickname filters
 
-### [Discord Server](https://discord.gg/meYfEJcf9P)
-
-**Need support? Contact @wiicart on Discord or wiicart@pedestriamc.com**
+**No support is provided for this fork of the addon. I only patched up features that were needed on a single private server, and I can't guarantee how long this will be maintained.**
