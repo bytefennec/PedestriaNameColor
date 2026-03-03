@@ -6,6 +6,7 @@ import com.pedestriamc.namecolor.commands.GradientCommand;
 import com.pedestriamc.namecolor.commands.namecolor.NameColorCommand;
 import com.pedestriamc.namecolor.commands.NicknameCommand;
 import com.pedestriamc.namecolor.commands.WhoIsCommand;
+import com.pedestriamc.namecolor.listeners.CommandListener;
 import com.pedestriamc.namecolor.listeners.JoinListener;
 import com.pedestriamc.namecolor.listeners.LeaveListener;
 import com.pedestriamc.namecolor.tabcompleters.GradientTabCompleter;
@@ -75,6 +76,7 @@ public class ClassRegistryManager {
     private void registerEvents() {
         registerEvent(new JoinListener(nameColor));
         registerEvent(new LeaveListener(nameColor));
+        registerEvent(new CommandListener(nameColor));
     }
 
     private void registerEvent(Listener listener) {
