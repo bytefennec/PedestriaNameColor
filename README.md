@@ -60,3 +60,4 @@ _*All commands support Hex/RGB_
 - namecolor.filter.bypass - allows bypassing nickname filters
 
 **No support is provided for this fork of the addon. I only patched up features that were needed on a single private server, and I can't guarantee how long this will be maintained.**
+**You will need the latest development build of [ProtocolLib](https://github.com/dmulloy2/ProtocolLib/releases/tag/dev-build) (as of writing) installed to run this version.**
