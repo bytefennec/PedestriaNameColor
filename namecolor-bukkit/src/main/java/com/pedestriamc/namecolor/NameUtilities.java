@@ -16,6 +16,7 @@ public final class NameUtilities {
     public static final Pattern HEX = Pattern.compile("#[a-fA-F0-9]{6}", Pattern.CASE_INSENSITIVE);
 
     public static final Pattern SPIGOT_HEX = Pattern.compile("&#[a-fA-F0-9]{6}", Pattern.CASE_INSENSITIVE);
+    public static final Pattern MC_HEX = Pattern.compile("§#[a-fA-F0-9]{6}", Pattern.CASE_INSENSITIVE);
 
     private final NameColor nameColor;
     private boolean usingEssentials;
@@ -98,6 +99,7 @@ public final class NameUtilities {
 
     public static String stripColor(String str) {
         String stripped = SPIGOT_HEX.matcher(str).replaceAll("");
+        stripped = MC_HEX.matcher(stripped).replaceAll(""); //don't fuck up tab board with hex codes.
         stripped = org.bukkit.ChatColor.translateAlternateColorCodes('&', stripped);
         stripped = org.bukkit.ChatColor.stripColor(stripped);
         return stripped;
