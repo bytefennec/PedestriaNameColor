@@ -89,7 +89,8 @@ public final class NameUtilities {
 
         displayName += "&r";
         displayName = ChatColor.translateAlternateColorCodes('&', displayName);
-        player.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
+        player.setPlayerListName(stripColor(displayName));
+        player.setDisplayName(displayName);
         if(usingEssentials) {
             essentials.getUser(player.getUniqueId()).setNickname(displayName);
         }
