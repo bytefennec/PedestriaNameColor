@@ -1,9 +1,15 @@
 package com.pedestriamc.namecolor;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import com.pedestriamc.common.message.Messenger;
 import com.pedestriamc.namecolor.api.Mode;
 import com.pedestriamc.namecolor.api.NameColorAPIProvider;
 import com.pedestriamc.namecolor.impl.NameColorImpl;
+import com.pedestriamc.namecolor.listeners.SystemChatPacketAdjuster;
+import com.pedestriamc.namecolor.listeners.GameProfileAdjuster;
+import com.pedestriamc.namecolor.listeners.ChatPacketAdjuster;
+import com.pedestriamc.namecolor.listeners.DisguisedChatPacketAdjuster;
 import com.pedestriamc.namecolor.manager.BlacklistManager;
 import com.pedestriamc.namecolor.manager.ClassRegistryManager;
 import com.pedestriamc.namecolor.manager.FileManager;
@@ -38,6 +44,7 @@ public final class NameColor extends JavaPlugin {
     private BlacklistManager blacklistManager;
     private UserUtil userUtil;
     private Messenger<Message> messenger;
+    ProtocolManager protocolManager;
 
     private boolean usingSql;
 
@@ -49,6 +56,7 @@ public final class NameColor extends JavaPlugin {
         determineMode();
         instantiateClasses();
         setupUserUtil();
+        protocolManager = ProtocolLibrary.getProtocolManager();
     }
 
     @Override
@@ -58,11 +66,17 @@ public final class NameColor extends JavaPlugin {
         registerPlaceholders();
         initializeMetrics();
         checkIfReload();
+        
+        protocolManager.addPacketListener(new SystemChatPacketAdjuster(this));
+        protocolManager.addPacketListener(new DisguisedChatPacketAdjuster(this));
+        protocolManager.addPacketListener(new ChatPacketAdjuster(this));
+        protocolManager.addPacketListener(new GameProfileAdjuster(this));
         info("NameColor version " + PLUGIN_VERSION + " enabled.");
     }
 
     @Override
     public void onDisable() {
+        protocolManager.removePacketListeners(this);
         userUtil.disable();
         info("Disabled.");
     }
