@@ -86,7 +86,8 @@ public class NicknameCommand implements CommandExecutor {
         }
 
         if(arg.equalsIgnoreCase("reset")) {
-            updateTarget(sender, target, target.getName());
+            User user = userUtil.getUser(player.getUniqueId());
+            updateTarget(sender, target, user.getOriginalName());
             return;
         }
 
@@ -145,7 +146,8 @@ public class NicknameCommand implements CommandExecutor {
             return false;
         }
 
-        if(!allowUserNick && !nick.equalsIgnoreCase(target.getName()) && doesMatchOtherUsername(nick)) {
+        User user = userUtil.getUser(target.getUniqueId());
+        if(!allowUserNick && !nick.equalsIgnoreCase(user.getOriginalName()) && doesMatchOtherUsername(nick)) {
             messenger.sendMessage(sender, Message.USERNAME_NICK_PROHIBITED);
             return false;
         }
@@ -160,7 +162,8 @@ public class NicknameCommand implements CommandExecutor {
 
     private boolean doesMatchOtherUsername(@NotNull String nick) {
         for(OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-            String name = player.getName();
+            User user = userUtil.getUser(player.getUniqueId());
+            String name = user.getOriginalName();
             if(name != null && name.equalsIgnoreCase(nick)) {
                 return true;
             }
@@ -181,11 +184,11 @@ public class NicknameCommand implements CommandExecutor {
         userUtil.saveUser(user);
 
         if(!sender.equals(target)) {
-            messenger.sendMessage(sender, Message.NAME_SET_OTHER, getPlaceholders(target));
+            messenger.sendMessage(sender, Message.NAME_SET_OTHER, getPlaceholders(target, user));
         }
 
         if(notifyChange) {
-            messenger.sendMessage(target, Message.NAME_SET, getPlaceholders(target));
+            messenger.sendMessage(target, Message.NAME_SET, getPlaceholders(target, user));
         }
     }
 
@@ -205,14 +208,14 @@ public class NicknameCommand implements CommandExecutor {
         userUtil.saveUser(user);
 
         if(modifyingOther) {
-            messenger.sendMessage(sender, Message.NO_NICK_COLOR_OTHER, getPlaceholders(target));
+            messenger.sendMessage(sender, Message.NO_NICK_COLOR_OTHER, getPlaceholders(target, user));
         }
 
         if(notifyChange) {
             if(modifyingOther) {
-                messenger.sendMessage(target, Message.NAME_SET, getPlaceholders(target));
+                messenger.sendMessage(target, Message.NAME_SET, getPlaceholders(target, user));
             } else {
-                messenger.sendMessage(target, Message.NO_NICK_COLOR, getPlaceholders(target));
+                messenger.sendMessage(target, Message.NO_NICK_COLOR, getPlaceholders(target, user));
             }
         }
     }
@@ -242,10 +245,10 @@ public class NicknameCommand implements CommandExecutor {
     }
 
     @Contract("_ -> new")
-    private @NotNull @Unmodifiable Map<String, String> getPlaceholders(@NotNull Player player) {
+    private @NotNull @Unmodifiable Map<String, String> getPlaceholders(@NotNull Player player, @NotNull User user) {
         return Map.of(
                 "%display-name%", player.getDisplayName(),
-                "%username%", player.getName()
+                "%username%", user.getOriginalName()
         );
     }
 }

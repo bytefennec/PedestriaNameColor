@@ -40,7 +40,7 @@ public class CommandListener implements Listener {
 				continue;
 			}
 
-			message = PacketUtilities.getNamePatternFakeToReal(fakeName).matcher(message).replaceAll(user.getPlayer().getName());
+			message = PacketUtilities.getNamePatternFakeToReal(fakeName).matcher(message).replaceAll(user.getOriginalName());
 		}
 
 		commandEvent.setMessage(message);

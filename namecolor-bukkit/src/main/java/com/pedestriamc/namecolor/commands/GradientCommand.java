@@ -91,11 +91,11 @@ public class GradientCommand implements CommandExecutor {
         userUtil.saveUser(user);
 
         if(!sender.equals(target)) {
-            messenger.sendMessage(sender, Message.NAME_SET_OTHER, getPlaceholders(target));
+            messenger.sendMessage(sender, Message.NAME_SET_OTHER, getPlaceholders(target, user));
         }
 
         if(notify) {
-            messenger.sendMessage(target, Message.NAME_SET, getPlaceholders(target));
+            messenger.sendMessage(target, Message.NAME_SET, getPlaceholders(target, user));
         }
 
         return true;
@@ -186,10 +186,10 @@ public class GradientCommand implements CommandExecutor {
     }
 
     @Contract("_ -> new")
-    private @NotNull @Unmodifiable Map<String, String> getPlaceholders(@NotNull Player player) {
+    private @NotNull @Unmodifiable Map<String, String> getPlaceholders(@NotNull Player player, @NotNull User user) {
         return Map.of(
                 "%display-name%", player.getDisplayName(),
-                "%username%", player.getName()
+                "%username%", user.getOriginalName()
         );
     }
 

@@ -15,11 +15,13 @@ public final class User implements NameColorUser {
     private final UUID uuid;
     private final Player player;
     private String displayName;
+    private String originalName;
 
     public User(NameUtilities nameUtilities, UUID uuid) {
         this.nameUtilities = nameUtilities;
         this.uuid = uuid;
         player = Objects.requireNonNull(Bukkit.getPlayer(uuid));
+        originalName = player.getName();
     }
 
     public User(NameUtilities nameUtilities, UUID uuid, String displayName) {
@@ -36,6 +38,11 @@ public final class User implements NameColorUser {
     @NotNull
     public String getDisplayName() {
         return displayName != null ? displayName : player.getDisplayName();
+    }
+
+    @NotNull
+    public String getOriginalName() {
+        return originalName;
     }
 
     public void setDisplayName(@NotNull String displayName) {

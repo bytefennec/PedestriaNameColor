@@ -48,11 +48,12 @@ public class WhoIsCommand implements CommandExecutor {
                 break;
             }
         }
-
+        
         if(player == null) {
             messenger.sendMessage(sender, Message.NICK_UNKNOWN, Map.of("%display-name%", stripped));
         } else {
-            messenger.sendMessage(sender, Message.WHOIS_MESSAGE, generatePlaceholders(player));
+            User user = userUtil.getUser(player.getUniqueId());
+            messenger.sendMessage(sender, Message.WHOIS_MESSAGE, generatePlaceholders(user));
         }
 
         return true;
@@ -66,10 +67,10 @@ public class WhoIsCommand implements CommandExecutor {
     }
 
     @Contract("_ -> new")
-    private @NotNull @Unmodifiable Map<String, String> generatePlaceholders(@NotNull Player player) {
+    private @NotNull @Unmodifiable Map<String, String> generatePlaceholders(@NotNull User user) {
         return Map.of(
-                "%display-name%", player.getDisplayName(),
-                "%username%", player.getName()
+                "%display-name%", user.getDisplayName(),
+                "%username%", user.getOriginalName()
         );
     }
 }

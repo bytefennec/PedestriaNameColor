@@ -10,6 +10,7 @@ import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.earth2me.essentials.Essentials;
 import com.pedestriamc.namecolor.api.Mode;
 
@@ -66,7 +67,7 @@ public final class NameUtilities {
      */
     @SuppressWarnings("unused")
     public void setColor(Player player, ChatColor color) {
-        setDisplayName(color + player.getName(), player);
+        setDisplayName(color + NameUtilities.stripColor(player.getName()), player);
     }
 
     /**
@@ -78,9 +79,9 @@ public final class NameUtilities {
     @SuppressWarnings("unused")
     public void setColor(Player player, String color, boolean save) {
         if(color.charAt(0) == '#') {
-            setDisplayName(ChatColor.of(color) + player.getName(), player);
+            setDisplayName(ChatColor.of(color) + NameUtilities.stripColor(player.getName()), player);
         } else {
-            setDisplayName(ChatColor.translateAlternateColorCodes('&', color) + player.getName(), player);
+            setDisplayName(ChatColor.translateAlternateColorCodes('&', color) + NameUtilities.stripColor(player.getName()), player);
         }
     }
 
@@ -103,16 +104,26 @@ public final class NameUtilities {
         if(!stripColor(displayName).equalsIgnoreCase(player.getName())) {
             displayName = nickPrefix + displayName;
         }
-
+        
         displayName += "&r";
         displayName = ChatColor.translateAlternateColorCodes('&', displayName);
-        player.setPlayerListName(stripColor(displayName));
+        String strippedName = stripColor(displayName);
+        player.setPlayerListName(strippedName);
         player.setDisplayName(displayName);
+
         if(usingEssentials) {
             essentials.getUser(player.getUniqueId()).setNickname(displayName);
         }
 
-        ForceRefreshPlayer(player, stripColor(displayName));
+        Bukkit.getScheduler().runTaskLater(nameColor, () -> {
+            PlayerProfile originalProfile = player.getPlayerProfile();
+            PlayerProfile fakeProfile = Bukkit.createProfileExact(originalProfile.getId(), strippedName);
+            fakeProfile.setProperties(originalProfile.getProperties());
+            fakeProfile.setTextures(originalProfile.getTextures());
+            player.setPlayerProfile(fakeProfile);
+
+            ForceRefreshPlayer(player, strippedName);
+        }, 1);
     }
 
     public static String stripColor(String str) {

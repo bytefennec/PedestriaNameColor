@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Locale;
 import java.util.Map;
@@ -90,19 +91,19 @@ public class NameColorCommand implements CommandExecutor {
             return true;
         }
 
-        String displayName = generateDisplayName(args, sender, target.getName());
+        User user = userUtil.getUser(target.getUniqueId());
+        String displayName = generateDisplayName(args, sender, user.getOriginalName());
         if(displayName == null) {
             return true;
         }
 
-        updateUser(userUtil.getUser(target.getUniqueId()), displayName);
-
+        updateUser(user, displayName);
         if(!sender.equals(target)) {
-            messenger.sendMessage(sender, Message.NAME_SET_OTHER, getPlaceholders(target));
+            messenger.sendMessage(sender, Message.NAME_SET_OTHER, getPlaceholders(target, user));
         }
 
         if(notify) {
-            messenger.sendMessage(target, Message.NAME_SET, getPlaceholders(target));
+            messenger.sendMessage(target, Message.NAME_SET, getPlaceholders(target, user));
         }
 
         return true;
@@ -247,10 +248,10 @@ public class NameColorCommand implements CommandExecutor {
     }
 
     @Contract("_ -> new")
-    private @NotNull Map<String, String> getPlaceholders(@NotNull Player player) {
+    private @NotNull @Unmodifiable Map<String, String> getPlaceholders(@NotNull Player player, @NotNull User user) {
         return Map.of(
                 "%display-name%", player.getDisplayName(),
-                "%username%", player.getName()
+                "%username%", user.getOriginalName()
         );
     }
 
