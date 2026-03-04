@@ -84,7 +84,7 @@ public class GradientCommand implements CommandExecutor {
             return true;
         }
 
-        String displayName = user.getDisplayName();
+        String displayName = NameUtilities.stripColor(user.getDisplayName());
         String nick = Gradient.apply(color1, color2, displayName, Painter.BUNGEE_STRIP_IGNORE_STYLES);
 
         user.setDisplayName(nick);
