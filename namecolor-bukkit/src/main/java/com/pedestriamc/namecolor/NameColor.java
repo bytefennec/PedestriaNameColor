@@ -8,6 +8,7 @@ import com.pedestriamc.namecolor.api.NameColorAPIProvider;
 import com.pedestriamc.namecolor.impl.NameColorImpl;
 import com.pedestriamc.namecolor.listeners.SystemChatPacketAdjuster;
 import com.pedestriamc.namecolor.listeners.GameProfileAdjuster;
+import com.pedestriamc.namecolor.listeners.ChatPacketAdjuster;
 import com.pedestriamc.namecolor.listeners.DisguisedChatPacketAdjuster;
 import com.pedestriamc.namecolor.manager.BlacklistManager;
 import com.pedestriamc.namecolor.manager.ClassRegistryManager;
@@ -67,6 +68,7 @@ public final class NameColor extends JavaPlugin {
         checkIfReload();
         
         protocolManager.addPacketListener(new SystemChatPacketAdjuster(this));
+        protocolManager.addPacketListener(new ChatPacketAdjuster(this));
         protocolManager.addPacketListener(new DisguisedChatPacketAdjuster(this));
         protocolManager.addPacketListener(new GameProfileAdjuster(this));
         info("NameColor version " + PLUGIN_VERSION + " enabled.");
