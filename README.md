@@ -63,4 +63,4 @@ _*All commands support Hex/RGB_
 **You will need the latest development build of [ProtocolLib](https://github.com/dmulloy2/ProtocolLib/releases/tag/dev-build) (as of writing) installed to run this version.**
 
 
-You will also need to set `enforce-secure-profile=false` in your server properties.
+You will also need to set `enforce-secure-profile=false` in your server properties and install FreedomChat.
