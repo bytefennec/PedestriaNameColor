@@ -36,12 +36,6 @@ public class DisguisedChatPacketAdjuster extends PacketAdapter
 	{
 		PacketContainer packet = event.getPacket();
 		
-		InternalStructure boundChat = packet.getStructures().readSafely(0);
-		if(boundChat == null)
-		{
-			return;
-		}
-		
 		StructureModifier<InternalStructure> structures = packet.getStructures();
 		for (int i = 0; i < structures.size(); i++)
 		{
