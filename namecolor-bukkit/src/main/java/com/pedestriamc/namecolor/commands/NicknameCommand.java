@@ -179,7 +179,7 @@ public class NicknameCommand implements CommandExecutor {
      */
     private void updateTarget(@NotNull CommandSender sender, @NotNull Player target, @NotNull String nick) {
         User user = userUtil.getUser(target.getUniqueId());
-        Bukkit.getLogger().info(nick);
+        Bukkit.getLogger().info(user.getOriginalName() + " changed nickname to " + nick);
         user.setDisplayName(nick);
         userUtil.saveUser(user);
 
@@ -200,10 +200,10 @@ public class NicknameCommand implements CommandExecutor {
      */
     private void updateTargetStripped(@NotNull CommandSender sender, @NotNull Player target, @NotNull String nick) {
         nick = stripColor(nick);
-        Bukkit.getLogger().info(nick);
         boolean modifyingOther = !sender.equals(target);
 
         User user = userUtil.getUser(target.getUniqueId());
+        Bukkit.getLogger().info(user.getOriginalName() + " changed nickname to " + nick);
         user.setDisplayName(nick);
         userUtil.saveUser(user);
 
