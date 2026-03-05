@@ -69,7 +69,7 @@ public class WhoIsCommand implements CommandExecutor {
     @Contract("_ -> new")
     private @NotNull @Unmodifiable Map<String, String> generatePlaceholders(@NotNull User user) {
         return Map.of(
-                "%display-name%", user.getDisplayName(),
+                "%display-name%", NameUtilities.stripColor(user.getDisplayName()),
                 "%username%", user.getOriginalName()
         );
     }
