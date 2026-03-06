@@ -212,7 +212,7 @@ public final class NameUtilities {
                     manager.sendServerPacket(otherPlayer, removeInfo);
                 }
             }
-        }, 0);
+        }, 1);
 
         Bukkit.getScheduler().runTaskLater(nameColor, new Runnable() {
             @Override
@@ -231,6 +231,6 @@ public final class NameUtilities {
                     }
                 }
             }
-        }, 1);
+        }, 2);
     }
 }
