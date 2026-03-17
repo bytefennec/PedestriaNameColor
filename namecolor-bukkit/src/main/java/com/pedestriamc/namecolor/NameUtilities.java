@@ -121,9 +121,18 @@ public final class NameUtilities {
             fakeProfile.setProperties(originalProfile.getProperties());
             fakeProfile.setTextures(originalProfile.getTextures());
             player.setPlayerProfile(fakeProfile);
+            for(Player otherPlayer : Bukkit.getOnlinePlayers())
+            {
+                otherPlayer.hidePlayer(nameColor, player);
+            }
 
-            ForceRefreshPlayer(player, strippedName);
-        }, 1);
+            Bukkit.getScheduler().runTaskLater(nameColor, () -> {
+                for(Player otherPlayer : Bukkit.getOnlinePlayers())
+                {
+                    otherPlayer.showPlayer(nameColor, player);
+                }
+            }, 1);
+        },2);
     }
 
     public static String stripColor(String str) {
@@ -132,105 +141,5 @@ public final class NameUtilities {
         stripped = org.bukkit.ChatColor.translateAlternateColorCodes('&', stripped);
         stripped = org.bukkit.ChatColor.stripColor(stripped);
         return stripped;
-    }
-
-    public void ForceRefreshPlayer(Player player, String name)
-    {
-        ProtocolManager manager = nameColor.protocolManager;
-
-        PacketContainer removeInfo = manager.createPacket(PacketType.Play.Server.PLAYER_INFO_REMOVE);
-        removeInfo.getUUIDLists().write(0, Collections.singletonList(player.getUniqueId()));
-
-        WrappedGameProfile fakeProfile = new WrappedGameProfile(player.getUniqueId(), name);
-        WrappedGameProfile realProfile = WrappedGameProfile.fromPlayer(player);
-        fakeProfile.getProperties().putAll(realProfile.getProperties());
-
-        PacketContainer addInfo = manager.createPacket(PacketType.Play.Server.PLAYER_INFO);
-        addInfo.getPlayerInfoActions().write(0, EnumSet.of(
-            EnumWrappers.PlayerInfoAction.ADD_PLAYER,
-            EnumWrappers.PlayerInfoAction.UPDATE_LISTED,
-            EnumWrappers.PlayerInfoAction.UPDATE_GAME_MODE,
-            EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME
-        ));
-        addInfo.getPlayerInfoDataLists().write(1, Collections.singletonList(new PlayerInfoData(
-            fakeProfile,
-            player.getPing(),
-            EnumWrappers.NativeGameMode.fromBukkit(player.getGameMode()),
-            WrappedChatComponent.fromText(name)
-        )));
-
-        //also have to spawn new entity in too.
-        PacketContainer removeEntity = manager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
-        removeEntity.getIntLists().write(0, Collections.singletonList(player.getEntityId()));
-
-        PacketContainer addEntity = manager.createPacket(PacketType.Play.Server.SPAWN_ENTITY);
-        addEntity.getIntegers().write(0, player.getEntityId());
-        addEntity.getUUIDs().write(0, player.getUniqueId());
-        addEntity.getEntityTypeModifier().write(0, EntityType.PLAYER);
-        addEntity.getDoubles().write(0, player.getLocation().getX())
-            .write(1, player.getLocation().getY())
-            .write(2, player.getLocation().getZ());
-        addEntity.getBytes().write(0, (byte)(player.getPitch() * 256.0f / 360.0f))
-            .write(1, (byte)(player.getYaw() * 256.0f / 360.0f))
-            .write(2, (byte)(player.getYaw() * 256.0f / 360.0f));
-
-        PacketContainer entityMetadata = manager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
-        entityMetadata.getIntegers().write(0, player.getEntityId());
-        WrappedDataWatcher metadataWatcher = WrappedDataWatcher.getEntityWatcher(player);
-        //swap type for 1.21.11 packet
-        List<WrappedDataValue> wrappedDataValues = new ArrayList<>();
-        for(WrappedWatchableObject watchableObject : metadataWatcher.getWatchableObjects())
-        {
-            if(watchableObject == null)
-            {
-                continue;
-            }
-
-            WrappedDataWatcher.WrappedDataWatcherObject watcherObject = watchableObject.getWatcherObject();
-            wrappedDataValues.add(new WrappedDataValue(
-                watcherObject.getIndex(),
-                watcherObject.getSerializer(),
-                watchableObject.getRawValue()
-            ));
-        }
-
-        entityMetadata.getDataValueCollectionModifier().write(0, wrappedDataValues);
-
-        Bukkit.getScheduler().runTaskLater(nameColor, new Runnable() {
-            @Override
-            public void run()
-            {
-                for(Player otherPlayer : Bukkit.getOnlinePlayers())
-                {
-                    if(otherPlayer.getUniqueId() != player.getUniqueId())
-                    {
-                        //MC Client starts behaving really funkily if you send a new local player entity to it,
-                        //as the client manages its own entity. 
-                        manager.sendServerPacket(otherPlayer, removeEntity);
-                    }
-
-                    manager.sendServerPacket(otherPlayer, removeInfo);
-                }
-            }
-        }, 1);
-
-        Bukkit.getScheduler().runTaskLater(nameColor, new Runnable() {
-            @Override
-            public void run()
-            {
-                for(Player otherPlayer : Bukkit.getOnlinePlayers())
-                {
-                    manager.sendServerPacket(otherPlayer, addInfo);
-
-                    if(otherPlayer.getUniqueId() != player.getUniqueId())
-                    {
-                        //MC Client starts behaving really funkily if you send a new local player entity to it,
-                        //as the client manages its own entity. 
-                        manager.sendServerPacket(otherPlayer, addEntity);
-                        manager.sendServerPacket(otherPlayer, entityMetadata);
-                    }
-                }
-            }
-        }, 2);
     }
 }
