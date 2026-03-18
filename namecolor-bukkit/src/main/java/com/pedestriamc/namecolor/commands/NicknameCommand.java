@@ -132,18 +132,16 @@ public class NicknameCommand implements CommandExecutor {
     private boolean satisfiesConditions(CommandSender sender, Player target, String nick) {
         nick = stripColor(nick);
 
-        if(
-                sender.hasPermission("namecolor.filter.bypass") ||
-                sender.hasPermission("namecolor.*") ||
-                sender.hasPermission("*") ||
-                sender.isOp()
-        ) {
-            return true;
-        }
-
         if(nick.length() > maxLength) {
             messenger.sendMessage(sender, Message.NICK_TOO_LONG);
             return false;
+        }
+
+        if(
+                sender.hasPermission("namecolor.filter.bypass") ||
+                sender.isOp()
+        ) {
+            return true;
         }
 
         User user = userUtil.getUser(target.getUniqueId());
