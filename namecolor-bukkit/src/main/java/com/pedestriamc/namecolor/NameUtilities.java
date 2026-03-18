@@ -119,7 +119,6 @@ public final class NameUtilities {
             PlayerProfile originalProfile = player.getPlayerProfile();
             PlayerProfile fakeProfile = Bukkit.createProfileExact(originalProfile.getId(), strippedName);
             fakeProfile.setProperties(originalProfile.getProperties());
-            fakeProfile.setTextures(originalProfile.getTextures());
             player.setPlayerProfile(fakeProfile);
             for(Player otherPlayer : Bukkit.getOnlinePlayers())
             {
